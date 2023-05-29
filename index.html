@@ -82,7 +82,7 @@
                 name="Case"
                 id="Case"
                 type="text"
-                placeholder="Case Number required"
+                placeholder="Case Number "
                 required
               />
             </div>
@@ -95,7 +95,7 @@
               class="form-control input-lg text-center"
               name="tRadiation"
               id="tRadiation"
-              placeholder="Radiation Type required"
+              placeholder="Radiation Type "
               type="text"
               required
             />
@@ -232,31 +232,45 @@
         });
       });
 
-      // Step 2: Split the content into lines and process each line to create an array of objects
-      function processData(allText) {
-        var allTextLines = allText.split(/\r\n|\n/);
-        var headers = allTextLines[0].split(",");
-        var lines = [];
+      // Step 1: indentify table
+      $(".btn-outline-warning").click(function (e) {
+        var radiationOfCase = $("input[name='tValue']:checked").val();
+        var heightOfCase = document.getElementById("Height").value;
 
-        for (var i = 1; i < allTextLines.length; i++) {
-          var data = allTextLines[i].split(",");
-          if (data.length === headers.length) {
-            var tarr = [];
-            for (var j = 0; j < headers.length; j++) {
-              tarr.push(headers[j] + ":" + data[j]);
-            }
-            lines.push(tarr);
-          }
+        if (heightOfCase <= 3) {
+          heightOfCase = "3";
+        } else if (heightOfCase > 3 && heightOfCase <= 6) {
+          heightOfCase = "6";
+        } else if (heightOfCase > 6 && heightOfCase <= 9) {
+          heightOfCase = "9";
+        } else if (heightOfCase > 9 && heightOfCase <= 12) {
+          heightOfCase = "12";
+        } else if (heightOfCase > 12 && heightOfCase <= 15) {
+          heightOfCase = "15";
+        } else if (heightOfCase > 15 && heightOfCase <= 18) {
+          heightOfCase = "18";
+        } else if (heightOfCase > 18 && heightOfCase <= 21) {
+          heightOfCase = "21";
+        } else if (heightOfCase > 21 && heightOfCase <= 24) {
+          heightOfCase = "24";
+        } else if (heightOfCase > 24 && heightOfCase <= 27) {
+          heightOfCase = "27";
+        } else if (heightOfCase > 27 && heightOfCase <= 30) {
+          heightOfCase = "30";
+        } else {
         }
 
-        // Step 3: Iterate through the array and perform the desired operations on each object
-        lines.forEach(function (row) {
-          if (row[2] === "1.5") {
-            console.log(headers[1]); // This will print "30" if the value is 1.5
+        var csvKey = radiationOfCase + heightOfCase;
+        console.log(csvKey);
+        const selectedArray = arrays[csvKey];
+        console.log(selectedArray.length);
+
+        for (var i = 0; i < selectedArray.length; i++) {
+          if (selectedArray[i].Width === "4.5") {
+            console.log(selectedArray[i]);
           }
-          // Perform your desired operations here
-        });
-      }
+        }
+      });
     </script>
   </body>
 </html>
