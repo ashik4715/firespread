@@ -148,7 +148,7 @@
           <!-- width of case div -->
           <div class="col">
             <div class="form-group">
-              <label for="Width">Widht of Case</label>
+              <label for="Width">Width of Case</label>
               <input
                 class="form-control input-lg text-center"
                 name="Width"
@@ -180,9 +180,7 @@
         </div>
       </form>
       <div class="d-grid gap-2 d-md-block text-center">
-        <button class="btn btn-lg btn-outline-warning" onclick="addToTable()">
-          Calculate
-        </button>
+        <button class="btn btn-lg btn-outline-warning">Calculate</button>
       </div>
       <!-- table start -->
       <table id="resultsTable" class="my-5">
@@ -193,6 +191,7 @@
             <th>Height</th>
             <th>Width</th>
             <th>Boundery Distance</th>
+            <th>UnPertentage</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -203,23 +202,8 @@
     <script src="assets/csvData.js"></script>
     <!-- script form to table -->
     <script>
-      function addToTable() {
-        const caseNumber = document.getElementById("Case").value;
-        const radiationOfCase = document.getElementById("tRadiation").value;
-        const heightOfCase = document.getElementById("Height").value;
-        const widthOfCase = document.getElementById("Width").value;
-        const bounderyOfCase = document.getElementById("Boundery").value;
-
-        // Create a new row with the input values
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `<td>${caseNumber}</td><td>${radiationOfCase}</td><td>${heightOfCase} m</td><td>${widthOfCase} m</td><td>${bounderyOfCase} m</td>`;
-
-        // Append the new row to the table's tbody
-        document
-          .getElementById("resultsTable")
-          .querySelector("tbody")
-          .appendChild(newRow);
-      }
+      // global variable
+      var percentageByBoundery;
 
       // radio button value picker
       $(document).ready(function () {
@@ -230,47 +214,139 @@
             document.getElementById("tRadiation").value = radioValue;
           }
         });
-      });
+        // button click event fire
+        // Step 1: indentify table
+        $(".btn-outline-warning").click(function (e) {
+          var radiationOfCase = $("input[name='tValue']:checked").val();
+          var heightOfCase = document.getElementById("Height").value;
+          var widthOfCase = document.getElementById("Width").value;
+          var bounderyOfCase = document.getElementById("Boundery").value;
 
-      // Step 1: indentify table
-      $(".btn-outline-warning").click(function (e) {
-        var radiationOfCase = $("input[name='tValue']:checked").val();
-        var heightOfCase = document.getElementById("Height").value;
-
-        if (heightOfCase <= 3) {
-          heightOfCase = "3";
-        } else if (heightOfCase > 3 && heightOfCase <= 6) {
-          heightOfCase = "6";
-        } else if (heightOfCase > 6 && heightOfCase <= 9) {
-          heightOfCase = "9";
-        } else if (heightOfCase > 9 && heightOfCase <= 12) {
-          heightOfCase = "12";
-        } else if (heightOfCase > 12 && heightOfCase <= 15) {
-          heightOfCase = "15";
-        } else if (heightOfCase > 15 && heightOfCase <= 18) {
-          heightOfCase = "18";
-        } else if (heightOfCase > 18 && heightOfCase <= 21) {
-          heightOfCase = "21";
-        } else if (heightOfCase > 21 && heightOfCase <= 24) {
-          heightOfCase = "24";
-        } else if (heightOfCase > 24 && heightOfCase <= 27) {
-          heightOfCase = "27";
-        } else if (heightOfCase > 27 && heightOfCase <= 30) {
-          heightOfCase = "30";
-        } else {
-        }
-
-        var csvKey = radiationOfCase + heightOfCase;
-        console.log(csvKey);
-        const selectedArray = arrays[csvKey];
-        console.log(selectedArray.length);
-
-        for (var i = 0; i < selectedArray.length; i++) {
-          if (selectedArray[i].Width === "4.5") {
-            console.log(selectedArray[i]);
+          if (heightOfCase <= 3) {
+            heightOfCase = "3";
+          } else if (heightOfCase > 3 && heightOfCase <= 6) {
+            heightOfCase = "6";
+          } else if (heightOfCase > 6 && heightOfCase <= 9) {
+            heightOfCase = "9";
+          } else if (heightOfCase > 9 && heightOfCase <= 12) {
+            heightOfCase = "12";
+          } else if (heightOfCase > 12 && heightOfCase <= 15) {
+            heightOfCase = "15";
+          } else if (heightOfCase > 15 && heightOfCase <= 18) {
+            heightOfCase = "18";
+          } else if (heightOfCase > 18 && heightOfCase <= 21) {
+            heightOfCase = "21";
+          } else if (heightOfCase > 21 && heightOfCase <= 24) {
+            heightOfCase = "24";
+          } else if (heightOfCase > 24 && heightOfCase <= 27) {
+            heightOfCase = "27";
+          } else if (heightOfCase > 27 && heightOfCase <= 30) {
+            heightOfCase = "30";
           }
-        }
+
+          if (widthOfCase <= 3) {
+            widthOfCase = "3";
+          } else if (widthOfCase > 3 && widthOfCase <= 6) {
+            widthOfCase = "6";
+          } else if (widthOfCase > 6 && widthOfCase <= 9) {
+            widthOfCase = "9";
+          } else if (widthOfCase > 9 && widthOfCase <= 12) {
+            widthOfCase = "12";
+          } else if (widthOfCase > 12 && widthOfCase <= 15) {
+            widthOfCase = "15";
+          } else if (widthOfCase > 15 && widthOfCase <= 18) {
+            widthOfCase = "18";
+          } else if (widthOfCase > 18 && widthOfCase <= 21) {
+            widthOfCase = "21";
+          } else if (widthOfCase > 21 && widthOfCase <= 24) {
+            widthOfCase = "24";
+          } else if (widthOfCase > 24 && widthOfCase <= 27) {
+            widthOfCase = "27";
+          } else if (widthOfCase > 27 && widthOfCase <= 30) {
+            widthOfCase = "30";
+          } else if (widthOfCase > 30 && widthOfCase <= 40) {
+            widthOfCase = "40";
+          } else if (widthOfCase > 40 && widthOfCase <= 50) {
+            widthOfCase = "50";
+          } else if (widthOfCase > 50 && widthOfCase <= 60) {
+            widthOfCase = "60";
+          } else if (widthOfCase > 60 && widthOfCase <= 80) {
+            widthOfCase = "80";
+          } else if (widthOfCase > 80 && widthOfCase <= 100) {
+            widthOfCase = "100";
+          } else if (widthOfCase > 100 && widthOfCase <= 120) {
+            widthOfCase = "120";
+          } else if (widthOfCase > 120 && widthOfCase <= 130) {
+            widthOfCase = "130";
+          }
+
+          var csvKey = radiationOfCase + heightOfCase;
+          console.log(csvKey);
+          var selectedArray = arrays[csvKey];
+
+          // var closestRowWidth = findClosestRow(selectedArray, widthOfCase);
+          var closestWidth = parseFloat(widthOfCase);
+          var closestRowWidth;
+          console.log(closestWidth);
+          // console.log(closestRowBoundery);
+
+          for (var i = 0; i < selectedArray.length; i++) {
+            if (selectedArray[i].Width == closestWidth) {
+              console.log(selectedArray[i]);
+              closestRowWidth = selectedArray[i];
+            }
+          }
+
+          // Get the user input (replace with actual user input)
+          var Boundery = "2.5";
+          Boundery = bounderyOfCase;
+
+          // Get the percentage value and format the output
+          for (const key in closestRowWidth) {
+            if (closestRowWidth[key] === Boundery) {
+              percentageByBoundery = key;
+            }
+          }
+
+          if (percentageByBoundery) {
+            const output = `${percentageByBoundery}%`;
+            console.log(output); // Output: "30%"
+          } else {
+            console.log("No matching value found.");
+          }
+
+          // show result to table
+          const caseNumber = document.getElementById("Case").value;
+          var resultPercentage = percentageByBoundery;
+
+          // Create a new row with the input values
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `<td>${caseNumber}</td><td>${radiationOfCase}</td><td>${heightOfCase} m</td><td>${widthOfCase} m</td><td>${bounderyOfCase} m</td><td>${resultPercentage}</td>`;
+
+          // Append the new row to the table's tbody
+          document
+            .getElementById("resultsTable")
+            .querySelector("tbody")
+            .appendChild(newRow);
+        });
       });
+
+      // findclosestRow
+      function findClosestRow(array, userInput) {
+        var minDifference = Infinity;
+        var closestRow = null;
+
+        array.forEach((row, index) => {
+          var difference = Math.abs(userInput - parseFloat(row.Width));
+
+          if (difference < minDifference) {
+            minDifference = difference;
+            closestRow = row;
+          }
+        });
+
+        return closestRow;
+      }
     </script>
   </body>
 </html>
