@@ -361,7 +361,7 @@
           // find the value after user input boudery
           function findBeforeAndAfter(userInput) {
             const data = closestRowWidth;
-
+            console.log(data);
             const sortedKeys = Object.keys(data).sort((a, b) => {
               const valA = parseFloat(data[a]);
               const valB = parseFloat(data[b]);
@@ -432,23 +432,16 @@
                 y1 = parseFloat(key.replace("%", "")); // 30
                 y2 = parseFloat(nextBounderyVal[1].replace("%", "")); // 40
 
-                let computeY1 = parseFloat(key);
-                let computeY2 = parseFloat(key) + 10;
-                const UppderWidthPercentage = parseFloat(closestRowWidth[key]);
+                let computeY1 = parseFloat(key.replace("%", ""));
+                let computeY2 = computeY1 + 10;
 
-                if (UppderWidthPercentage >= parseFloat(Boundery)) {
-                  computeY2 = `${key.replace("Width", "").replace("%", "")}`;
-                }
-
-                y = `${
-                  parseFloat(y1 + (x1 + x2) * ((y2 - y1) / (x2 - x1))) + 0
-                }%`;
+                y = y1 + (Boundery - x1) * ((y2 - y1) / (x2 - x1));
 
                 console.log(y + " main percentage ");
                 console.log(x1 + " boundery, " + x2);
                 console.log(computeY1 + " percentages, " + computeY2);
                 console.log(y1 + " y1 y2, " + y2);
-                percentageByBoundery = y;
+                percentageByBoundery = `${parseFloat(y)}%`;
               }
             }
           }
