@@ -25,7 +25,6 @@
       integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
       crossorigin="anonymous"
     ></script>
-    <script src="https://evanplaice.github.io/jquery-csv/src/jquery.csv.min.js"></script>
   </head>
   <style>
     body {
@@ -58,18 +57,37 @@
       color: aqua;
       text-align: center;
     }
+    .result-style {
+      border: 1px solid;
+      color: #000;
+      background-color: gold;
+      border-radius: 1rem;
+      width: 554px;
+    }
   </style>
   <body>
     <div class="container text-white">
-      <p class="text-center my-3">
-        <img
-          src="./assets/fire-spread.svg"
-          class="img-fluid"
-          alt="fire-spread"
-          width="250"
-          height="250"
-        />
-      </p>
+      <div class="row">
+        <div class="col">
+          <p class="text-center my-3">
+            <img
+              src="./assets/fire-spread.svg"
+              class="img-fluid"
+              alt="fire-spread"
+              width="250"
+              height="250"
+            />
+          </p>
+        </div>
+        <div class="col">
+          <!-- result of table -->
+          <div
+            class="text-center mt-4 d-flex aligns-items-center justify-content-center"
+          >
+            <p class="result-style px-2" id="result-csv">Show Table Number</p>
+          </div>
+        </div>
+      </div>
 
       <form id="myForm" action="#" class="form-detection">
         <div class="row text-center">
@@ -182,16 +200,21 @@
       <div class="d-grid gap-2 d-md-block text-center">
         <button class="btn btn-lg btn-outline-warning">Calculate</button>
       </div>
+
       <!-- table start -->
-      <table id="resultsTable" class="my-5">
+      <table id="resultsTable" class="my-1">
         <thead>
           <tr>
             <th>Case No.</th>
             <th>Radiation Type</th>
-            <th>Height</th>
-            <th>Width</th>
+            <th>Case Height</th>
+            <th>Case Width</th>
+            <th>Table Height</th>
+            <th>Table Width</th>
             <th>Boundery Distance</th>
-            <th>UnPertentage</th>
+            <th>Unprotected Pertentage</th>
+            <th>Table Area</th>
+            <th>Case Area</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -203,7 +226,7 @@
     <!-- script form to table -->
     <script>
       // global variable
-      var percentageByBoundery;
+      let percentageByBoundery = `0%`;
 
       // radio button value picker
       $(document).ready(function () {
@@ -221,6 +244,9 @@
           var heightOfCase = document.getElementById("Height").value;
           var widthOfCase = document.getElementById("Width").value;
           var bounderyOfCase = document.getElementById("Boundery").value;
+
+          const userHeight = heightOfCase;
+          const userWidth = widthOfCase;
 
           if (heightOfCase <= 3) {
             heightOfCase = "3";
@@ -281,47 +307,171 @@
           }
 
           var csvKey = radiationOfCase + heightOfCase;
-          console.log(csvKey);
           var selectedArray = arrays[csvKey];
 
-          // var closestRowWidth = findClosestRow(selectedArray, widthOfCase);
           var closestWidth = parseFloat(widthOfCase);
           var closestRowWidth;
-          console.log(closestWidth);
-          // console.log(closestRowBoundery);
 
           for (var i = 0; i < selectedArray.length; i++) {
             if (selectedArray[i].Width == closestWidth) {
-              console.log(selectedArray[i]);
               closestRowWidth = selectedArray[i];
             }
           }
 
           // Get the user input (replace with actual user input)
-          var Boundery = "2.5";
-          Boundery = bounderyOfCase;
+          const Boundery = bounderyOfCase;
 
+          // display data to html p-tag
+          function displayData(data) {
+            var output = "";
+            for (var key in data) {
+              if (typeof data[key] === "object") {
+                output += "<span>" + key + ":</span> " + displayData(data[key]);
+              } else {
+                output += "<span>" + key + ": " + data[key] + "</span><br>";
+              }
+            }
+            return output;
+          }
+
+          // var jsonObj = JSON.parse(closestRowWidth);
+          // var outputHtml = displayData(closestRowWidth);
+          let formattedData = Object.entries(closestRowWidth)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("\n");
+
+          // Set the content of the <p> tag using .text()
+          $("#result-csv").text(csvKey + " table-> \n" + formattedData);
+
+          function findAndSaveIndices(array) {
+            const firstIndex = array.findLast(
+              (element, index) => element === array[1]
+            );
+            const immediateFirstIndex = array.findLast(
+              (element, index) => element === array[2]
+            );
+            const previousIndex = array.findLast(
+              (element, index) => element === array[index]
+            );
+            const previousElementIndex = previousIndex;
+
+            return [firstIndex, previousElementIndex, immediateFirstIndex];
+          }
+
+          // find the value after user input boudery
+          function findBeforeAndAfter(userInput) {
+            const data = closestRowWidth;
+
+            const sortedKeys = Object.keys(data).sort((a, b) => {
+              const valA = parseFloat(data[a]);
+              const valB = parseFloat(data[b]);
+              return valA - valB;
+            });
+
+            let before = "";
+            let after = "";
+            let afterWidth = "";
+
+            for (let i = 0; i < sortedKeys.length; i++) {
+              const key = sortedKeys[i];
+              const value = parseFloat(data[key]);
+
+              if (value > userInput) {
+                after = value.toString();
+                afterWidth = key;
+                break;
+              } else {
+                before = value.toString();
+              }
+            }
+
+            return [after, afterWidth, before];
+          }
+
+          // end findbefore
+          let y1, y2;
+
+          let nextBounderyVal = findBeforeAndAfter(parseFloat(Boundery));
           // Get the percentage value and format the output
           for (const key in closestRowWidth) {
+            // find 20% and 100% value
+            const percentagesArray = Object.values(closestRowWidth);
+            const indices = findAndSaveIndices(percentagesArray);
+            // end printing 20% and 100% value
+
             if (closestRowWidth[key] === Boundery) {
               percentageByBoundery = key;
+            } else if (parseFloat(Boundery) > indices[1]) {
+              percentageByBoundery = `${100}%`;
+            } else if (parseFloat(Boundery) < indices[0]) {
+              percentageByBoundery = `${0}%`;
+            } else if (parseFloat(Boundery) > closestRowWidth[key]) {
+              if (
+                parseFloat(Boundery) < indices[0] &&
+                parseFloat(Boundery) > indices[1]
+              ) {
+                console.log(
+                  closestRowWidth[key] < indices[0] &&
+                    closestRowWidth[key] > indices[1]
+                );
+                percentageByBoundery = `${100}%`;
+              }
+              if (key > "130%") {
+                // lets interpolate
+                // y = y1 + ((x1+x2)*((y2-y1)/(x2-x1)))
+                // x = boundery distance (for, input 4.2)
+                // x1 = lower boudery 4.0
+                // x2 = Upper boudery 4.5
+                // y1 = lower boudery 50
+                // y2 = Upper boudery 60
+                // percentageByBoundery = `interpolation`;
+
+                let x1 = closestRowWidth[key]; // 3.5
+                let x2 = nextBounderyVal[0]; // 5.5
+
+                y1 = parseFloat(key.replace("%", "")); // 30
+                y2 = parseFloat(nextBounderyVal[1].replace("%", "")); // 40
+
+                let computeY1 = parseFloat(key);
+                let computeY2 = parseFloat(key) + 10;
+                const UppderWidthPercentage = parseFloat(closestRowWidth[key]);
+
+                if (UppderWidthPercentage >= parseFloat(Boundery)) {
+                  computeY2 = `${key.replace("Width", "").replace("%", "")}`;
+                }
+
+                y = `${
+                  parseFloat(y1 + (x1 + x2) * ((y2 - y1) / (x2 - x1))) + 0
+                }%`;
+
+                console.log(y + " main percentage ");
+                console.log(x1 + " boundery, " + x2);
+                console.log(computeY1 + " percentages, " + computeY2);
+                console.log(y1 + " y1 y2, " + y2);
+                percentageByBoundery = y;
+              }
             }
           }
 
           if (percentageByBoundery) {
-            const output = `${percentageByBoundery}%`;
+            // const output = `${percentageByBoundery}%`;
+            const output = percentageByBoundery;
             console.log(output); // Output: "30%"
           } else {
-            console.log("No matching value found.");
+            // console.log("No matching value found.");
+            const output = `interpolation`;
           }
 
           // show result to table
           const caseNumber = document.getElementById("Case").value;
-          var resultPercentage = percentageByBoundery;
+          let resultPercentage = percentageByBoundery;
 
           // Create a new row with the input values
+          const tableArea = heightOfCase * widthOfCase;
+          const caseArea = userHeight * userWidth;
+
           const newRow = document.createElement("tr");
-          newRow.innerHTML = `<td>${caseNumber}</td><td>${radiationOfCase}</td><td>${heightOfCase} m</td><td>${widthOfCase} m</td><td>${bounderyOfCase} m</td><td>${resultPercentage}</td>`;
+          newRow.innerHTML = `<td>${caseNumber}</td><td>${radiationOfCase}</td><td>${userHeight} m</td><td>${userWidth} m</td><td>${heightOfCase} m</td><td>${widthOfCase} m</td><td>${bounderyOfCase} m</td><td>${resultPercentage}</td><td>${tableArea}</td><td>${caseArea}</td>`;
 
           // Append the new row to the table's tbody
           document
