@@ -60,16 +60,15 @@
     .result-style {
       border: 1px solid;
       color: #000;
-      background-color: gold;
+      background-color: darkgoldenrod;
       border-radius: 1rem;
-      width: 554px;
+      max-width: 1254px;
     }
   </style>
   <body>
     <div class="container text-white">
       <div class="row">
-        <div class="col">
-          <p class="text-center my-3">
+        <p class="text-center my-3">
             <img
               src="./assets/fire-spread.svg"
               class="img-fluid"
@@ -77,15 +76,16 @@
               width="250"
               height="250"
             />
-          </p>
+        </p>
+      </div>
+
+      <div class="row">
+        <!-- result of table -->
+        <div class="text-center my-3 d-flex aligns-items-center justify-content-center">
+          <a href="unprotected-percentage.html" class="btn btn-block btn-dark mx-5">Unprotected Percentage</a>
         </div>
-        <div class="col">
-          <!-- result of table -->
-          <div
-            class="text-center mt-4 d-flex aligns-items-center justify-content-center"
-          >
-            <p class="result-style px-2" id="result-csv">Show Table Number</p>
-          </div>
+        <div class="text-center my-3 d-flex aligns-items-center justify-content-center">
+          <p class="result-style px-2" id="result-csv">Show Table Number</p>
         </div>
       </div>
 
@@ -197,7 +197,7 @@
           </div>
         </div>
       </form>
-      <div class="d-grid gap-2 d-md-block text-center">
+      <div class="d-grid gap-5 my-3 d-md-block text-center">
         <button class="btn btn-lg btn-outline-warning">Calculate</button>
       </div>
 
